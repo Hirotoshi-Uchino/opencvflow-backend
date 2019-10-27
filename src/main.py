@@ -2,26 +2,35 @@ import json
 import sys
 import traceback
 
+from log import setup_logger
 from pipeline_parser import PipelineParser
 
-args = sys.argv
-pipelineInfoString = args[1]
 
-resultHeader = {'code': '000'}
-pp = PipelineParser(pipelineInfoString)
+if __name__ == '__main__':
+    args = sys.argv
+    pipelineInfoString = args[1]
 
-img_ndarray = pp.get_image()
+    logger = setup_logger(__name__, './logs/process.log')
+    logger.info('pipeline start.')
+    logger.info('pipelineInfoString' + pipelineInfoString)
 
-result = {'resultList': []}
-for p in pp.parse():
-    process  = p['process']
+    resultHeader = {'code': '000'}
+    pp = PipelineParser(pipelineInfoString)
 
-    try:
-        img_ndarray, base64 = process.do(img_ndarray)
-        this_result = {'blockId': p['block_id'], 'base64': base64}
-        result['resultList'].append(this_result)
+    img_ndarray = pp.get_image()
 
-    except:
-        print(traceback.format_exc())
+    result = {'resultList': []}
+    for p in pp.parse():
+        process  = p['process']
 
-print(json.dumps(result))
+        try:
+            img_ndarray, base64 = process.do(img_ndarray)
+            this_result = {'blockId': p['block_id'], 'base64': base64}
+            result['resultList'].append(this_result)
+
+        except:
+            print(traceback.format_exc())
+
+    logger.info('pipeline end.')
+
+    print(json.dumps(result))

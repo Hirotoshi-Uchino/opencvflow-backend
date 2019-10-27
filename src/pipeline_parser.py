@@ -43,12 +43,6 @@ class PipelineParser():
             if 'detailParameters' in parameters:
                 detail_parameters = parameters['detailParameters']
 
-            print('process_id: ', process_id)
-            print('dtail_process: ', detail_process)
-
-            if process_id > 3: # 一時的
-                continue
-
             process_instance = self.process_map[process_id](ext, detail_process, detail_parameters)
             process_instances.append({'block_id': block_id, 'process': process_instance})
 
